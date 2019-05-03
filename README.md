@@ -10,3 +10,7 @@ Tested with Fedora 30 and Fedora 29.
 
 Start with `install-extra-codecs` and then add the rest as you please. Or just run `everything`
 to get all the goodies.
+
+Also note that `install-extra-themes` currently only installs one theme: the best one,
+[Arc](https://github.com/NicoHood/arc-theme). But if you want more choices, check out my
+[install-gnome-themes](https://github.com/tliron/install-gnome-themes) script.
