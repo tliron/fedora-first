@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+if [ "$EUID" == 0 ]; then
+	echo "Do not run this script as root"
+	exit 1
+fi
+
+# Arc
+
+sudo dnf install autoconf automake pkgconfig sassc optipng inkscape
+
+VERSION=20190330
+
+ARCHIVE=/tmp/arc-theme.tar.xz
+SOURCE="/tmp/arc-theme-$VERSION"
+
+# Download
+if [ ! -f "$ARCHIVE" ]; then
+	curl --output "$ARCHIVE" --location "https://github.com/NicoHood/arc-theme/releases/download/$VERSION/arc-theme-$VERSION.tar.xz"
+fi
+
+# Unzip
+mkdir --parents "$HOME/.themes"
+tar --extract --file="$ARCHIVE" --directory=/tmp "arc-theme-$VERSION"
+
+cd "$SOURCE"
+./autogen.sh --prefix="$SOURCE"
+make install
+mkdir --parents "$HOME/.themes"
+cp --recursive share/themes/* "$HOME/.themes"
+
+rm --recursive "$ARCHIVE" "$SOURCE"
+
+echo "Finished $(basename $0)!"
+

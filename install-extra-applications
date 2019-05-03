@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Run this script as root"
+	exit 1
+fi
+
+# From RPM Fusion Free:
+# xpra-codecs-freeworld \
+# ffmpeg compat-ffmpeg28 mp3gain normalize \
+# audacious-plugins-freeworld \
+# mpv vlc HandBrake-gui
+
+# From RPM Fusion Non-Free:
+# unrar
+
+dnf install \
+fedora-workstation-repositories \
+byobu htop screenfetch vim-enhanced aria2 linuxconsoletools unrar p7zip-plugins alien \
+dnf-utils \
+tilix tilix-nautilus \
+qt5-qtstyleplugins qt-config \
+gparted dconf-editor d-feet pavucontrol gpick \
+gedit-plugins gnome-tweaks meld pyrenamer \
+qpdfview xournal \
+xpra xpra-codecs-freeworld remmina \
+wine-desktop \
+java-11-openjdk \
+audacious audacious-plugins-freeworld kid3-qt asunder mpv vlc HandBrake-gui \
+flac lame cuetools shntool \
+ffmpeg compat-ffmpeg28 mp3gain normalize
+
+# Run "Qt4 Config" to change style
+
+# These require fedora-workstation-repositories 
+dnf config-manager --set-enabled google-chrome
+dnf config-manager --set-enabled rpmfusion-nonfree-steam
+
+dnf install \
+google-chrome-stable \
+steam
+
+echo "Finished $(basename $0)!"

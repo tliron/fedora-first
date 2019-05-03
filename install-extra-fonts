@@ -1,0 +1,55 @@
+#!/bin/bash
+set -e
+
+MICROSOFT_VERSION=2.6-1
+UBUNTU_VERSION=0.83
+HACK_VERSION=3.003
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Run this script as root"
+	exit 1
+fi
+
+dnf install cabextract ttmkfdir
+
+# Microsoft Fonts
+# See: http://mscorefonts2.sourceforge.net/
+dnf install "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-$MICROSOFT_VERSION.noarch.rpm"
+
+function install_zip () {
+	local NAME=$1
+	local URL=$2
+
+	local DEST="/usr/share/fonts/$NAME"
+	local ARCHIVE="/tmp/$NAME-fonts.zip"
+
+	if [ -d "$DEST" ]; then
+		echo "$NAME already installed!"
+		return
+	fi
+	
+	if [ ! -f "$ARCHIVE" ]; then
+		curl --output "$ARCHIVE" --location "$URL"
+	fi
+
+	mkdir --parents "$DEST"
+	unzip -j "$ARCHIVE" -d "$DEST"
+	rm "$ARCHIVE"
+
+	pushd "$DEST"
+	ttmkfdir > fonts.dir
+	popd
+}
+
+# Ubuntu Fonts
+# See: https://design.ubuntu.com/font/
+install_zip ubuntu "https://assets.ubuntu.com/v1/fad7939b-ubuntu-font-family-$UBUNTU_VERSION.zip"
+
+# Hack Font
+# See: https://sourcefoundry.org/hack/
+install_zip hack "https://github.com/source-foundry/Hack/releases/download/v$HACK_VERSION/Hack-v$HACK_VERSION-ttf.zip"
+
+fc-cache -fv
+
+echo "Finished $(basename $0)!"
+

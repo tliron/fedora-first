@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+OBSIDIAN_VERSION=4.6
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Run this script as root"
+	exit 1
+fi
+
+# Obsidian
+
+DEST=/usr/share/icons/Obsidian
+ARCHIVE=/tmp/obsidian-icons.tar.xz
+
+if [ -d "$DEST" ]; then
+	echo 'Obsidian already installed!'
+	exit 0
+fi
+
+if [ ! -f "$ARCHIVE" ]; then
+	curl --output "$ARCHIVE" --location "https://github.com/madmaxms/iconpack-obsidian/releases/download/v$OBSIDIAN_VERSION/obsidian-iconpack.tar.xz"
+fi
+
+tar --extract --file="$ARCHIVE" --directory=/usr/share/icons Obsidian
+rm "$ARCHIVE"
+
+echo "Finished $(basename $0)!"

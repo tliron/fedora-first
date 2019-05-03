@@ -1,0 +1,59 @@
+#!/bin/bash
+set -e
+
+# This expects that you ran all the other scripts
+
+FONT=Ubuntu
+FONT_TITLE=Ubuntu
+FONT_MONO=Hack
+FONT_SIZE=12
+
+if [ "$EUID" == 0 ]; then
+	echo "Do not run this script as root"
+	exit 1
+fi
+
+# Window Manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 2
+gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
+
+# Fonts
+gsettings set org.gnome.desktop.wm.preferences titlebar-font "$FONT_TITLE Regular $FONT_SIZE"
+gsettings set org.gnome.desktop.interface font-name "$FONT Regular $FONT_SIZE"
+gsettings set org.gnome.desktop.interface document-font-name "$FONT Regular $FONT_SIZE"
+gsettings set org.gnome.desktop.interface monospace-font-name "$FONT_MONO $FONT_SIZE"
+
+# Themes
+gsettings set org.gnome.shell.extensions.user-theme name 'Arc-Dark'
+gsettings set org.gnome.desktop.interface gtk-theme 'Arc-Darker'
+gsettings set org.gnome.desktop.interface icon-theme 'Obsidian'
+
+# Top bar
+gsettings set org.gnome.desktop.interface clock-show-date true
+
+function set_custom_keybinding () {
+	local ID=$1
+	local KEY=$2
+	local VALUE=$3
+	gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$ID/" "$KEY" "$VALUE"
+}
+
+function custom_keybinding () {
+	local ID=$1
+	local NAME=$2
+	local COMMAND=$3
+	local BINDING=$4
+	set_custom_keybinding "$ID" 'name' "$NAME"
+	set_custom_keybinding "$ID" 'command' "$COMMAND"
+	set_custom_keybinding "$ID" 'binding' "$BINDING"
+}
+
+# Keyboard
+#gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'il')]"
+gsettings set org.gnome.desktop.input-sources xkb-options "['compose:rctrl']"
+gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']"
+custom_keybinding 0 Terminal '/usr/bin/tilix' '<Super>T'
+custom_keybinding 1 Files '/usr/bin/nautilus' '<Super>F'
+
+echo "Finished $(basename $0)!"
+

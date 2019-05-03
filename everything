@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+if [ "$EUID" == 0 ]; then
+	echo "Do not run this script as root"
+	exit 1
+fi
+
+HERE=$(dirname "$(readlink -f "$0")")
+
+sudo "$HERE/install-extra-codecs"
+sudo "$HERE/install-extra-fonts"
+sudo "$HERE/install-extra-icons"
+"$HERE/install-extra-themes"
+sudo "$HERE/install-extra-applications"
+sudo "$HERE/improve-font-rendering"
+"$HERE/customize-gnome"
+
+echo "Finished $(basename $0)!"

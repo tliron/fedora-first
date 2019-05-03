@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Run this script as root"
+	exit 1
+fi
+
+FEDORA_VERSION=$(rpm -E %fedora)
+
+# From RPM Fusion Free
+# gstreamer-ffmpeg gstreamer-plugins-ugly gstreamer-plugins-bad-free
+
+# From RPM Fusion Non-Free
+# gstreamer-plugins-bad-nonfree
+
+dnf install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm"
+dnf install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm"
+
+dnf install \
+gstreamer-ffmpeg gstreamer-plugins-ugly gstreamer-plugins-bad-free \
+gstreamer-plugins-bad-nonfree
+
+echo "Finished $(basename $0)!"
